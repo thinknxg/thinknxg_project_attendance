@@ -1,3 +1,5 @@
 [pre_model_sync]
 
 [post_model_sync]
+thinknxg_project_attendance.patches.v1_1.backfill_project_attendance_ledger
+thinknxg_project_attendance.patches.v1_2.set_overtime_approval

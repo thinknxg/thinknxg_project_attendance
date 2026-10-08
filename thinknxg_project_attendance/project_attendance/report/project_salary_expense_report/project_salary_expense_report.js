@@ -24,6 +24,12 @@ frappe.query_reports["Project Salary Expense Report"] = {
         { fieldname: "employee", label: __("Employee"), fieldtype: "Link", options: "Employee" },
         { fieldname: "department", label: __("Department"), fieldtype: "Link", options: "Department" },
         { fieldname: "grade", label: __("Grade"), fieldtype: "Link", options: "Employee Grade" },
+        {
+            fieldname: "source",
+            label: __("Attendance Source"),
+            fieldtype: "Select",
+            options: ["", "Employee Checkin", "Bulk Attendance", "Attendance"],
+        },
         { fieldname: "cost_center", label: __("Cost Center"), fieldtype: "Link", options: "Cost Center" },
         { fieldname: "payroll_entry", label: __("Payroll Entry"), fieldtype: "Link", options: "Payroll Entry" },
     ],

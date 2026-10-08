@@ -1,7 +1,7 @@
 import frappe
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import cint, flt, format_date, get_link_to_form, getdate, nowdate
+from frappe.utils import cint, flt, format_date, get_link_to_form, getdate, now_datetime, nowdate
 
 from thinknxg_project_attendance.utils.common import (
     WORKED_STATUSES,
@@ -13,6 +13,7 @@ from thinknxg_project_attendance.utils.common import (
     get_salary_assignment,
     get_settings,
 )
+from thinknxg_project_attendance.utils.ledger import write_bulk_rows
 from thinknxg_project_attendance.utils.overtime import get_overtime_rate
 
 LINKED_DOCTYPES = ("Attendance", "Project Overtime", "Additional Salary")
@@ -61,6 +62,9 @@ class BulkAttendanceRecord(Document):
         finally:
             frappe.flags.mute_messages = mute
 
+        # the Project Attendance Ledger is the common costing layer for every attendance source
+        write_bulk_rows(self)
+
     def before_cancel(self):
         self.ignore_linked_doctypes = LINKED_DOCTYPES
         self.validate_cancellation()
@@ -90,6 +94,7 @@ class BulkAttendanceRecord(Document):
         finally:
             frappe.flags.mute_messages = mute
 
+        frappe.db.delete("Project Attendance Ledger", {"bulk_attendance_record": self.name})
         self.db_set("status", "Cancelled")
 
     def on_trash(self):
@@ -430,7 +435,11 @@ class BulkAttendanceRecord(Document):
             more = _("... and {0} more").format(len(existing) - 15) if len(existing) > 15 else ""
             frappe.throw(
                 _("Attendance is already marked for employee {0} on:").format(frappe.bold(self.employee))
-                + f"<ul>{rows}</ul>{more}",
+                + f"<ul>{rows}</ul>{more}"
+                + _(
+                    "These days are already covered (for example by Auto Attendance from Employee Checkins). "
+                    "A day can have only one costing source: remove the rows from this record or cancel the Attendance."
+                ),
                 title=_("Duplicate Attendance"),
             )
 
@@ -568,8 +577,15 @@ class BulkAttendanceRecord(Document):
                 "company": self.company,
                 "attendance_date": row.day,
                 "project": row.project,
+                "source": "Bulk Attendance",
                 "is_holiday": cint(row.is_holiday),
                 "overtime_hours": flt(row.overtime_hours),
+                # overtime typed on the record is approved by submitting the record
+                "approval_status": "Approved",
+                "approved_hours": flt(row.overtime_hours),
+                "approved_by": frappe.session.user,
+                "approved_on": now_datetime(),
+                "approval_remarks": "Approved with the Bulk Attendance Record",
                 "overtime_rate": flt(row.overtime_rate),
                 "calculation_method": settings.overtime_calculation_method,
                 "bulk_attendance_record": self.name,

@@ -11,6 +11,7 @@
   "column_break_1",
   "attendance_date",
   "project",
+  "source",
   "is_holiday",
   "status",
   "amount_section",
@@ -19,6 +20,13 @@
   "column_break_2",
   "overtime_rate",
   "overtime_amount",
+  "approval_section",
+  "approval_status",
+  "approved_hours",
+  "column_break_approval",
+  "approved_by",
+  "approved_on",
+  "approval_remarks",
   "reference_section",
   "bulk_attendance_record",
   "attendance",
@@ -78,10 +86,19 @@
    "fieldtype": "Link",
    "label": "Project",
    "options": "Project",
-   "reqd": 1,
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "search_index": 1
+   "search_index": 1,
+   "description": "Empty = unallocated."
+  },
+  {
+   "fieldname": "source",
+   "fieldtype": "Select",
+   "label": "Source",
+   "options": "Bulk Attendance\nEmployee Checkin",
+   "default": "Bulk Attendance",
+   "read_only": 1,
+   "in_standard_filter": 1
   },
   {
    "fieldname": "is_holiday",
@@ -127,7 +144,6 @@
    "fieldname": "overtime_rate",
    "fieldtype": "Currency",
    "label": "OT Rate",
-   "in_list_view": 1,
    "non_negative": 1
   },
   {
@@ -135,7 +151,65 @@
    "fieldtype": "Currency",
    "label": "OT Amount",
    "read_only": 1,
-   "in_list_view": 1
+   "in_list_view": 1,
+   "allow_on_submit": 1,
+   "description": "Approved hours x rate. While pending: recorded hours x rate (estimate)."
+  },
+  {
+   "fieldname": "approval_section",
+   "fieldtype": "Section Break",
+   "label": "Approval"
+  },
+  {
+   "fieldname": "approval_status",
+   "fieldtype": "Select",
+   "label": "Approval Status",
+   "options": "Pending\nApproved\nRejected",
+   "default": "Pending",
+   "read_only": 1,
+   "no_copy": 1,
+   "allow_on_submit": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "approved_hours",
+   "fieldtype": "Float",
+   "label": "Approved OT Hours",
+   "read_only": 1,
+   "no_copy": 1,
+   "allow_on_submit": 1,
+   "description": "Hours paid through payroll; can be less than the recorded OT hours."
+  },
+  {
+   "fieldname": "column_break_approval",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Link",
+   "label": "Approved / Rejected By",
+   "options": "User",
+   "read_only": 1,
+   "no_copy": 1,
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "approved_on",
+   "fieldtype": "Datetime",
+   "label": "Approved / Rejected On",
+   "read_only": 1,
+   "no_copy": 1,
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "approval_remarks",
+   "fieldtype": "Small Text",
+   "label": "Approval Remarks",
+   "read_only": 1,
+   "no_copy": 1,
+   "allow_on_submit": 1
   },
   {
    "fieldname": "reference_section",
@@ -191,7 +265,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-10-08 10:00:00.000000",
+ "modified": "2026-10-08 20:00:00.000000",
  "modified_by": "Administrator",
  "module": "Project Attendance",
  "name": "Project Overtime",

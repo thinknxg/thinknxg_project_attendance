@@ -34,6 +34,17 @@ doc_events = {
         "on_submit": "thinknxg_project_attendance.events.salary_slip.on_submit",
         "on_cancel": "thinknxg_project_attendance.events.salary_slip.on_cancel",
     },
+    "Attendance": {
+        "on_submit": "thinknxg_project_attendance.events.attendance.on_submit",
+        "on_cancel": "thinknxg_project_attendance.events.attendance.on_cancel",
+    },
+    "Employee Checkin": {
+        "validate": "thinknxg_project_attendance.events.employee_checkin.validate",
+        "on_update": "thinknxg_project_attendance.events.employee_checkin.on_update",
+    },
+    "Payroll Entry": {
+        "before_submit": "thinknxg_project_attendance.events.payroll_entry.before_submit",
+    },
     "Journal Entry": {
         "on_submit": "thinknxg_project_attendance.events.journal_entry.on_submit",
         "on_cancel": "thinknxg_project_attendance.events.journal_entry.on_cancel",
@@ -43,5 +54,6 @@ doc_events = {
 scheduler_events = {
     "daily": [
         "thinknxg_project_attendance.utils.journal.post_pending_project_journals",
+        "thinknxg_project_attendance.utils.ledger.reconcile_ledger",
     ],
 }

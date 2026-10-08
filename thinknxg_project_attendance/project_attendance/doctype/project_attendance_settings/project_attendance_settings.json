@@ -24,6 +24,18 @@
   "post_reclass_journal",
   "auto_submit_journal",
   "fallback_expense_account",
+  "checkin_section",
+  "enable_checkin_costing",
+  "checkin_overtime",
+  "standard_hours_source",
+  "minimum_overtime_minutes",
+  "require_overtime_approval",
+  "overtime_approver_role",
+  "block_payroll_on_pending_overtime",
+  "column_break_checkin",
+  "overtime_allocation_method",
+  "holiday_hours_as_overtime",
+  "unallocated_project",
   "validation_section",
   "allow_future_dates",
   "column_break_val",
@@ -167,6 +179,93 @@
    "description": "Used only when a Salary Component has no account for the company."
   },
   {
+   "fieldname": "checkin_section",
+   "fieldtype": "Section Break",
+   "label": "Employee Checkin / Auto Attendance"
+  },
+  {
+   "fieldname": "enable_checkin_costing",
+   "fieldtype": "Check",
+   "label": "Use Attendance from Employee Checkin for Project Costing",
+   "default": "1",
+   "description": "Every submitted Attendance that does not come from a Bulk Attendance Record (Auto Attendance from Employee Checkins, manual Attendance) is written to the Project Attendance Ledger."
+  },
+  {
+   "fieldname": "checkin_overtime",
+   "fieldtype": "Check",
+   "label": "Calculate Overtime from Checkins",
+   "default": "1",
+   "depends_on": "eval:doc.enable_checkin_costing",
+   "description": "Hours worked beyond the standard hours of the day become Project Overtime."
+  },
+  {
+   "fieldname": "standard_hours_source",
+   "fieldtype": "Select",
+   "label": "Standard Hours per Day",
+   "options": "Normal Working Hours (Settings)\nShift Duration",
+   "default": "Normal Working Hours (Settings)",
+   "depends_on": "eval:doc.enable_checkin_costing && doc.checkin_overtime"
+  },
+  {
+   "fieldname": "minimum_overtime_minutes",
+   "fieldtype": "Int",
+   "label": "Minimum Overtime (minutes)",
+   "default": "0",
+   "non_negative": 1,
+   "depends_on": "eval:doc.enable_checkin_costing && doc.checkin_overtime",
+   "description": "Overtime below this is ignored for the day."
+  },
+  {
+   "fieldname": "require_overtime_approval",
+   "fieldtype": "Check",
+   "label": "Require Approval for Checkin Overtime",
+   "default": "1",
+   "depends_on": "eval:doc.enable_checkin_costing && doc.checkin_overtime",
+   "description": "Overtime calculated from checkins starts as Pending and is posted to payroll only after it is approved. Overtime entered on a Bulk Attendance Record is approved by submitting the record."
+  },
+  {
+   "fieldname": "overtime_approver_role",
+   "fieldtype": "Link",
+   "label": "Additional Overtime Approver Role",
+   "options": "Role",
+   "depends_on": "eval:doc.require_overtime_approval",
+   "description": "HR Manager and System Manager can always approve. Users with this role can approve as well."
+  },
+  {
+   "fieldname": "block_payroll_on_pending_overtime",
+   "fieldtype": "Check",
+   "label": "Block Payroll Entry while Overtime is Pending",
+   "depends_on": "eval:doc.require_overtime_approval",
+   "description": "If unchecked, the Payroll Entry only shows a warning; overtime approved later is paid with the next payroll."
+  },
+  {
+   "fieldname": "column_break_checkin",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "overtime_allocation_method",
+   "fieldtype": "Select",
+   "label": "Overtime Allocation between Projects",
+   "options": "Chronological\nProportional",
+   "default": "Chronological",
+   "depends_on": "eval:doc.enable_checkin_costing && doc.checkin_overtime",
+   "description": "<b>Chronological</b>: the hours after the standard hours are overtime of the project worked on at that time.<br><b>Proportional</b>: overtime is shared by the hours of each project that day."
+  },
+  {
+   "fieldname": "holiday_hours_as_overtime",
+   "fieldtype": "Check",
+   "label": "Treat All Hours on Holidays as Overtime",
+   "depends_on": "eval:doc.enable_checkin_costing && doc.checkin_overtime"
+  },
+  {
+   "fieldname": "unallocated_project",
+   "fieldtype": "Link",
+   "label": "Project for Unallocated Hours",
+   "options": "Project",
+   "depends_on": "eval:doc.enable_checkin_costing",
+   "description": "Optional. Used when no project can be resolved. If empty, the hours are kept as Unallocated and their cost stays on the payroll cost center."
+  },
+  {
    "fieldname": "validation_section",
    "fieldtype": "Section Break",
    "label": "Validation"
@@ -189,7 +288,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-10-08 10:00:00.000000",
+ "modified": "2026-10-08 20:00:00.000000",
  "modified_by": "Administrator",
  "module": "Project Attendance",
  "name": "Project Attendance Settings",

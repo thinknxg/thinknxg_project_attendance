@@ -22,6 +22,12 @@ frappe.query_reports["Project Labour Cost Summary"] = {
         },
         { fieldname: "project", label: __("Project"), fieldtype: "Link", options: "Project" },
         { fieldname: "department", label: __("Department"), fieldtype: "Link", options: "Department" },
+        {
+            fieldname: "source",
+            label: __("Attendance Source"),
+            fieldtype: "Select",
+            options: ["", "Employee Checkin", "Bulk Attendance", "Attendance"],
+        },
         { fieldname: "cost_center", label: __("Cost Center"), fieldtype: "Link", options: "Cost Center" },
         { fieldname: "payroll_entry", label: __("Payroll Entry"), fieldtype: "Link", options: "Payroll Entry" },
     ],

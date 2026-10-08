@@ -19,7 +19,8 @@ def get_columns():
         {"label": _("Employee Name"), "fieldname": "employee_name", "fieldtype": "Data", "width": 180},
         {"label": _("Department"), "fieldname": "department", "fieldtype": "Link", "options": "Department", "width": 140},
         {"label": _("Grade"), "fieldname": "grade", "fieldtype": "Link", "options": "Employee Grade", "width": 100},
-        {"label": _("Days Worked"), "fieldname": "days_worked", "fieldtype": "Float", "precision": 1, "width": 110},
+        {"label": _("Days Worked"), "fieldname": "days_worked", "fieldtype": "Float", "precision": 2, "width": 110},
+        {"label": _("Regular Hours"), "fieldname": "regular_hours", "fieldtype": "Float", "width": 120},
         {"label": _("Basic Salary"), "fieldname": "salary_amount", "fieldtype": "Currency", "options": "currency", "width": 130},
         {"label": _("Overtime Hours"), "fieldname": "overtime_hours", "fieldtype": "Float", "width": 120},
         {"label": _("Overtime Amount"), "fieldname": "overtime_amount", "fieldtype": "Currency", "options": "currency", "width": 140},
@@ -41,6 +42,7 @@ def build_query(filters, group_by_employee=True):
             pse.project,
             project.project_name,
             Sum(pse.days_worked).as_("days_worked"),
+            Sum(pse.working_hours).as_("regular_hours"),
             Sum(pse.salary_amount).as_("salary_amount"),
             Sum(pse.overtime_hours).as_("overtime_hours"),
             Sum(pse.overtime_amount).as_("overtime_amount"),
@@ -70,6 +72,8 @@ def build_query(filters, group_by_employee=True):
     for field in ("project", "employee", "department", "grade", "payroll_entry"):
         if filters.get(field):
             query = query.where(pse[field] == filters.get(field))
+    if filters.get("source"):
+        query = query.where(pse.attendance_sources.like(f"%{filters.source}%"))
     if filters.get("cost_center"):
         query = query.where(
             (pse.cost_center == filters.cost_center) | (pse.source_cost_center == filters.cost_center)
@@ -84,6 +88,8 @@ def get_data(filters):
         currency = frappe.get_cached_value("Company", filters.company, "default_currency")
     for row in data:
         row.currency = currency
+        if not row.project:
+            row.project_name = _("Unallocated")
     return data
 
 
@@ -92,7 +98,7 @@ def get_chart(data):
         return None
     totals = {}
     for row in data:
-        bucket = totals.setdefault(row.project, {"salary": 0.0, "overtime": 0.0})
+        bucket = totals.setdefault(row.project or _("Unallocated"), {"salary": 0.0, "overtime": 0.0})
         bucket["salary"] += (row.salary_amount or 0) + (row.other_earnings or 0)
         bucket["overtime"] += row.overtime_amount or 0
     labels = list(totals)[:20]

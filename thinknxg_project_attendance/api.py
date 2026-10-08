@@ -71,3 +71,39 @@ def create_bulk_records(
         created.append(doc.name)
 
     return {"created": created, "skipped": skipped}
+
+
+@frappe.whitelist()
+def project_checkin(log_type, project=None, device_id=None, latitude=None, longitude=None, employee=None):
+    """Create an Employee Checkin with a project (mobile apps, kiosks, integrations).
+
+    Without `employee` the checkin is for the employee linked to the logged-in user.
+    """
+    from frappe.utils import now_datetime
+
+    if log_type not in ("IN", "OUT"):
+        frappe.throw(_("Log Type must be IN or OUT."))
+
+    own = frappe.db.get_value("Employee", {"user_id": frappe.session.user, "status": "Active"}, "name")
+    if employee and employee != own:
+        frappe.has_permission("Employee Checkin", "create", throw=True)
+    employee = employee or own
+    if not employee:
+        frappe.throw(_("No active Employee is linked to user {0}.").format(frappe.session.user))
+
+    checkin = frappe.new_doc("Employee Checkin")
+    checkin.update(
+        {
+            "employee": employee,
+            "log_type": log_type,
+            "time": now_datetime(),
+            "device_id": device_id,
+            "nxg_project": project,
+        }
+    )
+    if latitude is not None and longitude is not None:
+        checkin.latitude = latitude
+        checkin.longitude = longitude
+    checkin.flags.ignore_permissions = bool(employee == own)
+    checkin.insert()
+    return {"name": checkin.name, "time": checkin.time, "project": checkin.get("nxg_project")}

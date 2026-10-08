@@ -71,7 +71,7 @@ def make_reclass_journal(payroll_entry):
 
     expenses = frappe.get_all(
         PSE,
-        filters={"payroll_entry": payroll_entry, "gl_status": "Not Posted"},
+        filters={"payroll_entry": payroll_entry, "gl_status": "Not Posted", "project": ["is", "set"]},
         fields=["name", "project", "cost_center", "source_cost_center"],
     )
     if not expenses:

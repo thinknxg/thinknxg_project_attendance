@@ -45,7 +45,75 @@ CUSTOM_FIELDS = {
             "search_index": 1,
         },
     ],
+    "Employee Checkin": [
+        {
+            "fieldname": "nxg_project_section",
+            "fieldtype": "Section Break",
+            "label": "Project",
+            "insert_after": "device_id",
+        },
+        {
+            "fieldname": "nxg_project",
+            "fieldtype": "Link",
+            "label": "Project",
+            "options": "Project",
+            "insert_after": "nxg_project_section",
+            "in_standard_filter": 1,
+            "in_list_view": 1,
+            "search_index": 1,
+            "description": "Project worked on from this log until the next one. Leave empty to use the device mapping, the Employee Project Assignment or the default project.",
+        },
+        {
+            "fieldname": "nxg_is_project_override",
+            "fieldtype": "Check",
+            "label": "Is Project Override",
+            "insert_after": "nxg_project",
+            "description": "Use this project even when the Employee Project Assignment does not allow checkin override.",
+        },
+        {
+            "fieldname": "nxg_project_column",
+            "fieldtype": "Column Break",
+            "insert_after": "nxg_is_project_override",
+        },
+        {
+            "fieldname": "nxg_project_source",
+            "fieldtype": "Data",
+            "label": "Project Source",
+            "insert_after": "nxg_project_column",
+            "read_only": 1,
+            "no_copy": 1,
+        },
+    ],
+    "Additional Salary": [
+        {
+            "fieldname": "nxg_project_overtime",
+            "fieldtype": "Check",
+            "label": "Project Overtime (Checkins)",
+            "insert_after": "ref_docname",
+            "read_only": 1,
+            "no_copy": 1,
+            "description": "Created by thinkNXG Project Attendance from checkin overtime.",
+        },
+    ],
+    "Department": [
+        {
+            "fieldname": "nxg_default_project",
+            "fieldtype": "Link",
+            "label": "Default Project",
+            "options": "Project",
+            "insert_after": "payroll_cost_center",
+            "description": "Used for employees of this department whose checkins carry no project.",
+        },
+    ],
     "Employee": [
+        {
+            "fieldname": "nxg_default_project",
+            "fieldtype": "Link",
+            "label": "Default Project",
+            "options": "Project",
+            "insert_after": "grade",
+            "description": "Used when a checkin carries no project and there is no Employee Project Assignment.",
+        },
         {
             "fieldname": "nxg_overtime_hourly_rate",
             "fieldtype": "Currency",
@@ -98,6 +166,13 @@ DEFAULTS = {
     "salary_allocation_method": "Working Days",
     "post_reclass_journal": 1,
     "auto_submit_journal": 1,
+    "enable_checkin_costing": 1,
+    "checkin_overtime": 1,
+    "standard_hours_source": "Normal Working Hours (Settings)",
+    "minimum_overtime_minutes": 0,
+    "overtime_allocation_method": "Chronological",
+    "require_overtime_approval": 1,
+    "block_payroll_on_pending_overtime": 0,
 }
 
 
@@ -116,17 +191,24 @@ def make_custom_fields():
 
 
 def set_default_settings():
-    """Fill the settings once; never overwrite values a user has already saved."""
-    if frappe.db.exists("Singles", {"doctype": SETTINGS, "field": "overtime_calculation_method"}):
-        return
-
-    settings = frappe.get_single(SETTINGS)
+    """Store a default for every setting that has never been saved (also after an upgrade that
+    adds settings). Values a user has saved are never overwritten."""
+    singles = frappe.qb.DocType("Singles")
+    stored = set(
+        frappe.qb.from_(singles).select(singles.field).where(singles.doctype == SETTINGS).run(pluck=True)
+    )
+    changed = False
     for key, value in DEFAULTS.items():
-        settings.set(key, value)
-    settings.overtime_salary_component = get_or_create_overtime_component()
-    settings.flags.ignore_mandatory = True
-    settings.flags.ignore_permissions = True
-    settings.save()
+        if key not in stored:
+            frappe.db.set_single_value(SETTINGS, key, value)
+            changed = True
+    if "overtime_salary_component" not in stored:
+        component = get_or_create_overtime_component()
+        if component:
+            frappe.db.set_single_value(SETTINGS, "overtime_salary_component", component)
+            changed = True
+    if changed:
+        frappe.clear_cache(doctype=SETTINGS)
 
 
 def get_or_create_overtime_component():
