@@ -1,0 +1,359 @@
+{
+ "actions": [],
+ "creation": "2026-10-08 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "period_section",
+  "posting_month",
+  "posting_year",
+  "column_break_period",
+  "from_date",
+  "to_date",
+  "column_break_company",
+  "company",
+  "status",
+  "employee_section",
+  "grade",
+  "employee",
+  "column_break_employee",
+  "employee_name",
+  "department",
+  "project_section",
+  "common_project",
+  "column_break_project",
+  "project_change_allowed",
+  "details_section",
+  "details",
+  "summary_section",
+  "total_present",
+  "total_half_day",
+  "total_wfh",
+  "column_break_sum1",
+  "total_absent",
+  "total_leave",
+  "total_holidays",
+  "column_break_sum2",
+  "total_working_hours",
+  "total_overtime_hours",
+  "total_overtime_amount",
+  "more_section",
+  "remarks",
+  "column_break_more",
+  "additional_salary",
+  "title",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "period_section",
+   "fieldtype": "Section Break",
+   "label": "Period"
+  },
+  {
+   "fieldname": "posting_month",
+   "fieldtype": "Select",
+   "label": "Posting Month",
+   "options": "January\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember",
+   "reqd": 1,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "posting_year",
+   "fieldtype": "Data",
+   "label": "Year",
+   "reqd": 1,
+   "length": 4,
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "column_break_period",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_company",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1,
+   "remember_last_selected_value": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nSubmitted\nPayroll Processed\nCancelled",
+   "default": "Draft",
+   "read_only": 1,
+   "no_copy": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1,
+   "allow_on_submit": 1
+  },
+  {
+   "fieldname": "employee_section",
+   "fieldtype": "Section Break",
+   "label": "Employee"
+  },
+  {
+   "fieldname": "grade",
+   "fieldtype": "Link",
+   "label": "Grade",
+   "options": "Employee Grade",
+   "in_standard_filter": 1
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "label": "Employee",
+   "options": "Employee",
+   "reqd": 1,
+   "in_standard_filter": 1,
+   "in_list_view": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "column_break_employee",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name",
+   "fetch_from": "employee.employee_name",
+   "read_only": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department",
+   "fetch_from": "employee.department",
+   "read_only": 1
+  },
+  {
+   "fieldname": "project_section",
+   "fieldtype": "Section Break",
+   "label": "Project"
+  },
+  {
+   "fieldname": "common_project",
+   "fieldtype": "Link",
+   "label": "Common Project",
+   "options": "Project",
+   "in_standard_filter": 1,
+   "description": "Applied to every day. Enable Project Change Allowed to use different projects on individual days."
+  },
+  {
+   "fieldname": "column_break_project",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "project_change_allowed",
+   "fieldtype": "Check",
+   "label": "Project Change Allowed",
+   "description": "If unchecked, all days inherit the Common Project and the row Project is read-only."
+  },
+  {
+   "fieldname": "details_section",
+   "fieldtype": "Section Break",
+   "label": "Attendance Details"
+  },
+  {
+   "fieldname": "details",
+   "fieldtype": "Table",
+   "label": "Daily Attendance",
+   "options": "Bulk Attendance Detail"
+  },
+  {
+   "fieldname": "summary_section",
+   "fieldtype": "Section Break",
+   "label": "Summary"
+  },
+  {
+   "fieldname": "total_present",
+   "fieldtype": "Float",
+   "label": "Present",
+   "read_only": 1,
+   "precision": "1"
+  },
+  {
+   "fieldname": "total_half_day",
+   "fieldtype": "Float",
+   "label": "Half Day",
+   "read_only": 1,
+   "precision": "1"
+  },
+  {
+   "fieldname": "total_wfh",
+   "fieldtype": "Float",
+   "label": "Work From Home",
+   "read_only": 1,
+   "precision": "1"
+  },
+  {
+   "fieldname": "column_break_sum1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_absent",
+   "fieldtype": "Float",
+   "label": "Absent",
+   "read_only": 1,
+   "precision": "1"
+  },
+  {
+   "fieldname": "total_leave",
+   "fieldtype": "Float",
+   "label": "On Leave",
+   "read_only": 1,
+   "precision": "1"
+  },
+  {
+   "fieldname": "total_holidays",
+   "fieldtype": "Float",
+   "label": "Holidays",
+   "read_only": 1,
+   "precision": "1"
+  },
+  {
+   "fieldname": "column_break_sum2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_working_hours",
+   "fieldtype": "Float",
+   "label": "Total Working Hours",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_overtime_hours",
+   "fieldtype": "Float",
+   "label": "Total Overtime Hours",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_overtime_amount",
+   "fieldtype": "Currency",
+   "label": "Total Overtime Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "more_section",
+   "fieldtype": "Section Break",
+   "label": "More Information"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "column_break_more",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "additional_salary",
+   "fieldtype": "Link",
+   "label": "Overtime Additional Salary",
+   "options": "Additional Salary",
+   "read_only": 1,
+   "no_copy": 1
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title",
+   "hidden": 1,
+   "no_copy": 1,
+   "print_hide": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "options": "Bulk Attendance Record",
+   "read_only": 1,
+   "no_copy": 1,
+   "print_hide": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-08 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Project Attendance",
+ "name": "Bulk Attendance Record",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 1
+  },
+  {
+   "role": "HR Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "submit": 1,
+   "cancel": 1,
+   "amend": 1
+  },
+  {
+   "role": "HR User",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "write": 1,
+   "create": 1,
+   "submit": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "is_submittable": 1,
+ "autoname": "format:BAR-{YYYY}-{#####}",
+ "naming_rule": "Expression",
+ "title_field": "title",
+ "track_changes": 1,
+ "search_fields": "employee,employee_name,posting_month,posting_year"
+}

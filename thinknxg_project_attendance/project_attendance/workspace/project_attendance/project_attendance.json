@@ -1,0 +1,205 @@
+{
+ "app": "thinknxg_project_attendance",
+ "charts": [],
+ "content": "[{\"id\": \"nxgpa_h1\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Project Attendance</b></span>\", \"col\": 12}}, {\"id\": \"nxgpa_s0\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Bulk Attendance Record\", \"col\": 3}}, {\"id\": \"nxgpa_s1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Project Overtime\", \"col\": 3}}, {\"id\": \"nxgpa_s2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Project Salary Expense\", \"col\": 3}}, {\"id\": \"nxgpa_s3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Project Salary Expense Report\", \"col\": 3}}, {\"id\": \"nxgpa_sp\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"nxgpa_c0\", \"type\": \"card\", \"data\": {\"card_name\": \"Transactions\", \"col\": 4}}, {\"id\": \"nxgpa_c1\", \"type\": \"card\", \"data\": {\"card_name\": \"Reports\", \"col\": 4}}, {\"id\": \"nxgpa_c2\", \"type\": \"card\", \"data\": {\"card_name\": \"Setup\", \"col\": 4}}]",
+ "creation": "2026-10-08 10:00:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "calendar-check",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "Project Attendance",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Transactions",
+   "link_count": 6,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Bulk Attendance Record",
+   "link_count": 0,
+   "link_to": "Bulk Attendance Record",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Project Overtime",
+   "link_count": 0,
+   "link_to": "Project Overtime",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Project Salary Expense",
+   "link_count": 0,
+   "link_to": "Project Salary Expense",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Attendance",
+   "link_count": 0,
+   "link_to": "Attendance",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Additional Salary",
+   "link_count": 0,
+   "link_to": "Additional Salary",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Payroll Entry",
+   "link_count": 0,
+   "link_to": "Payroll Entry",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reports",
+   "link_count": 2,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Project Salary Expense Report",
+   "link_count": 0,
+   "link_to": "Project Salary Expense Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link",
+   "report_ref_doctype": "Project Salary Expense"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Project Labour Cost Summary",
+   "link_count": 0,
+   "link_to": "Project Labour Cost Summary",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link",
+   "report_ref_doctype": "Project Salary Expense"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Setup",
+   "link_count": 4,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Project Attendance Settings",
+   "link_count": 0,
+   "link_to": "Project Attendance Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Salary Component",
+   "link_count": 0,
+   "link_to": "Salary Component",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Project",
+   "link_count": 0,
+   "link_to": "Project",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Employee Grade",
+   "link_count": 0,
+   "link_to": "Employee Grade",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-10-08 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Project Attendance",
+ "name": "Project Attendance",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 30.0,
+ "shortcuts": [
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "label": "Bulk Attendance Record",
+   "link_to": "Bulk Attendance Record",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "label": "Project Overtime",
+   "link_to": "Project Overtime",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Project Salary Expense",
+   "link_to": "Project Salary Expense",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "",
+   "label": "Project Salary Expense Report",
+   "link_to": "Project Salary Expense Report",
+   "type": "Report"
+  }
+ ],
+ "title": "Project Attendance"
+}

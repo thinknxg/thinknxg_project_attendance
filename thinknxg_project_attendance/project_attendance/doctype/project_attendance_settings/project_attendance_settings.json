@@ -1,0 +1,246 @@
+{
+ "actions": [],
+ "creation": "2026-10-08 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "overtime_section",
+  "overtime_calculation_method",
+  "normal_working_hours",
+  "monthly_divisor_days",
+  "column_break_ot",
+  "overtime_multiplier",
+  "holiday_overtime_multiplier",
+  "fixed_overtime_rate",
+  "max_overtime_hours_per_day",
+  "payroll_section",
+  "create_additional_salary",
+  "overtime_salary_component",
+  "column_break_payroll",
+  "basic_salary_component",
+  "allocation_section",
+  "salary_allocation_method",
+  "column_break_alloc",
+  "post_reclass_journal",
+  "auto_submit_journal",
+  "fallback_expense_account",
+  "validation_section",
+  "allow_future_dates",
+  "column_break_val",
+  "require_leave_application"
+ ],
+ "fields": [
+  {
+   "fieldname": "overtime_section",
+   "fieldtype": "Section Break",
+   "label": "Overtime Calculation"
+  },
+  {
+   "fieldname": "overtime_calculation_method",
+   "fieldtype": "Select",
+   "label": "Overtime Calculation Method",
+   "options": "Basic / Working Hours x Multiplier\nHourly Rate x OT Hours\nFixed OT Rate",
+   "default": "Basic / Working Hours x Multiplier",
+   "reqd": 1,
+   "description": "<b>Basic / Working Hours x Multiplier</b>: Base of the Salary Structure Assignment / Monthly Divisor Days / Normal Working Hours x Multiplier.<br><b>Hourly Rate x OT Hours</b>: Overtime Hourly Rate set on the Employee (fallback: Employee Grade).<br><b>Fixed OT Rate</b>: the same flat rate per overtime hour for everyone."
+  },
+  {
+   "fieldname": "normal_working_hours",
+   "fieldtype": "Float",
+   "label": "Normal Working Hours / Day",
+   "default": "8",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "monthly_divisor_days",
+   "fieldtype": "Int",
+   "label": "Monthly Divisor Days",
+   "default": "30",
+   "non_negative": 1,
+   "description": "Days used to derive the daily rate from the monthly base. Set 0 to use the calendar days of the month."
+  },
+  {
+   "fieldname": "column_break_ot",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "overtime_multiplier",
+   "fieldtype": "Float",
+   "label": "Overtime Multiplier",
+   "default": "1.25",
+   "non_negative": 1,
+   "depends_on": "eval:doc.overtime_calculation_method=='Basic / Working Hours x Multiplier'"
+  },
+  {
+   "fieldname": "holiday_overtime_multiplier",
+   "fieldtype": "Float",
+   "label": "Holiday Overtime Multiplier",
+   "default": "1.5",
+   "non_negative": 1,
+   "depends_on": "eval:doc.overtime_calculation_method=='Basic / Working Hours x Multiplier'",
+   "description": "Applied when the day is a holiday / weekly off in the employee's Holiday List. Leave 0 to use the normal multiplier."
+  },
+  {
+   "fieldname": "fixed_overtime_rate",
+   "fieldtype": "Currency",
+   "label": "Fixed OT Rate (per hour)",
+   "non_negative": 1,
+   "depends_on": "eval:doc.overtime_calculation_method=='Fixed OT Rate'",
+   "mandatory_depends_on": "eval:doc.overtime_calculation_method=='Fixed OT Rate'"
+  },
+  {
+   "fieldname": "max_overtime_hours_per_day",
+   "fieldtype": "Float",
+   "label": "Maximum OT Hours / Day",
+   "default": "4",
+   "non_negative": 1,
+   "description": "Set 0 for no limit."
+  },
+  {
+   "fieldname": "payroll_section",
+   "fieldtype": "Section Break",
+   "label": "Payroll"
+  },
+  {
+   "fieldname": "create_additional_salary",
+   "fieldtype": "Check",
+   "label": "Create Additional Salary for Overtime",
+   "default": "1",
+   "description": "On submission of a Bulk Attendance Record one Additional Salary is created for the total overtime amount, so the next payroll run picks it up automatically."
+  },
+  {
+   "fieldname": "overtime_salary_component",
+   "fieldtype": "Link",
+   "label": "Payroll Component for Overtime",
+   "options": "Salary Component",
+   "mandatory_depends_on": "eval:doc.create_additional_salary"
+  },
+  {
+   "fieldname": "column_break_payroll",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "basic_salary_component",
+   "fieldtype": "Link",
+   "label": "Basic Salary Component",
+   "options": "Salary Component",
+   "description": "Optional. If set, Project Salary Expense shows this component as Salary Amount and all other earnings as Other Earnings."
+  },
+  {
+   "fieldname": "allocation_section",
+   "fieldtype": "Section Break",
+   "label": "Project Salary Allocation"
+  },
+  {
+   "fieldname": "salary_allocation_method",
+   "fieldtype": "Select",
+   "label": "Salary Allocation Method",
+   "options": "Working Days\nWorking Hours\nAttendance Days",
+   "default": "Working Days",
+   "reqd": 1,
+   "description": "<b>Working Days</b>: every worked day (Present / Half Day / Work From Home) counts as 1.<br><b>Working Hours</b>: recorded working hours per project.<br><b>Attendance Days</b>: present-equivalent days (Half Day = 0.5)."
+  },
+  {
+   "fieldname": "column_break_alloc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "post_reclass_journal",
+   "fieldtype": "Check",
+   "label": "Post Project Journal Entry after Payroll",
+   "default": "1",
+   "description": "Re-classifies the salary expense booked by the Payroll Entry to the projects (same expense accounts, Project dimension set), so project-wise Profit and Loss includes labour cost."
+  },
+  {
+   "fieldname": "auto_submit_journal",
+   "fieldtype": "Check",
+   "label": "Submit the Journal Entry Automatically",
+   "default": "1",
+   "depends_on": "eval:doc.post_reclass_journal"
+  },
+  {
+   "fieldname": "fallback_expense_account",
+   "fieldtype": "Link",
+   "label": "Fallback Salary Expense Account",
+   "options": "Account",
+   "depends_on": "eval:doc.post_reclass_journal",
+   "description": "Used only when a Salary Component has no account for the company."
+  },
+  {
+   "fieldname": "validation_section",
+   "fieldtype": "Section Break",
+   "label": "Validation"
+  },
+  {
+   "fieldname": "allow_future_dates",
+   "fieldtype": "Check",
+   "label": "Allow Attendance for Future Dates"
+  },
+  {
+   "fieldname": "column_break_val",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "require_leave_application",
+   "fieldtype": "Check",
+   "label": "Require Approved Leave Application for On Leave",
+   "description": "If unchecked, On Leave rows without a Leave Application need a Leave Type on the row."
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-10-08 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Project Attendance",
+ "name": "Project Attendance Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1
+  },
+  {
+   "role": "HR Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1,
+   "write": 1,
+   "create": 1
+  },
+  {
+   "role": "HR User",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  },
+  {
+   "role": "Accounts Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "issingle": 1,
+ "track_changes": 1
+}
