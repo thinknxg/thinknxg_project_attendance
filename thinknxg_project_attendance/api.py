@@ -17,6 +17,8 @@ def create_bulk_records(
     grade=None,
     department=None,
     project_change_allowed=0,
+    common_shift=None,
+    shift_change_allowed=0,
 ):
     """Create draft Bulk Attendance Records for every active employee matching the filters."""
     frappe.has_permission("Bulk Attendance Record", "create", throw=True)
@@ -59,6 +61,9 @@ def create_bulk_records(
                 "grade": grade,
                 "common_project": common_project,
                 "project_change_allowed": cint(project_change_allowed),
+                # empty = each employee's own Default Shift
+                "common_shift": common_shift,
+                "shift_change_allowed": cint(shift_change_allowed),
             }
         )
         doc._settings = settings
@@ -107,3 +112,25 @@ def project_checkin(log_type, project=None, device_id=None, latitude=None, longi
     checkin.flags.ignore_permissions = bool(employee == own)
     checkin.insert()
     return {"name": checkin.name, "time": checkin.time, "project": checkin.get("nxg_project")}
+
+
+@frappe.whitelist()
+def get_employee_defaults(employee, on_date=None):
+    """Default shift and main project of an employee, to pre-fill a Bulk Attendance Record."""
+    from frappe.utils import getdate, nowdate
+
+    from thinknxg_project_attendance.utils.ledger import ProjectResolver
+
+    frappe.has_permission("Bulk Attendance Record", "read", throw=True)
+    on_date = getdate(on_date or nowdate())
+    resolver = ProjectResolver()
+    rows = resolver.assignments(employee, on_date)
+    project = None
+    if rows:
+        project = max(rows, key=lambda r: (cint(r.is_primary), r.allocation_percent or 0)).project
+    else:
+        project = resolver.defaults(employee)[0]
+    return {
+        "default_shift": frappe.db.get_value("Employee", employee, "default_shift"),
+        "project": project,
+    }

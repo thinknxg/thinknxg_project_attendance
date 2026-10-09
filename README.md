@@ -15,6 +15,28 @@ Payroll Entry ──► Salary Slip ──submit──► Project Salary Expense
               └─► accrual Journal Entry ─► Project re-classification Journal Entry (GL / P&L by Project)
 ```
 
+## What is new in 1.3
+
+- **Fix: "Page project-salary-expense not found".** Project Salary Expense and Project Attendance
+  Ledger were flagged *User Cannot Search*, which removes a DocType's list page for users who
+  only have read access. The flag is gone; both lists open normally after `bench migrate`.
+- **Common Shift / Shift Change Allowed** on the Bulk Attendance Record, working like the project
+  pair: the Common Shift (default: the employee's Default Shift) applies to every day and the row
+  Shift is read-only unless Shift Change Allowed is ticked. The same two fields are in the
+  *Create for Multiple Employees* dialog; an empty Common Shift there means each employee's own
+  Default Shift.
+- **Days are generated automatically** on a new Bulk Attendance Record as soon as the month,
+  the employee and the project are known, and again when the month or year is changed. Selecting
+  the employee also proposes the Common Shift and, from the Employee Project Assignment or the
+  default project, the Common Project. The Generate Days button remains for a manual refresh.
+- **Employee Project Assignment with several projects.** One assignment now holds a table of
+  projects with Allocation % (total must be 100) and one primary project. Hours of checkins
+  without a project are shared between the projects by percentage. Only one active assignment
+  per employee and date is allowed. Existing assignments are converted on migrate.
+
+Upgrade: `bench --site yoursite migrate`, `bench build --app thinknxg_project_attendance`,
+`bench --site yoursite clear-cache`.
+
 ## What is new in 1.2: overtime approval
 
 Overtime calculated from checkins is no longer paid automatically.
@@ -70,8 +92,8 @@ Bulk Attendance Record ───────────────────
 
 1. Project on the Employee Checkin (typed, sent by API, or stamped from **Project Device Mapping**
    by Device ID).
-2. **Employee Project Assignment** active on the date. Several overlapping assignments share the
-   hours by Allocation %. An assignment with *Allow Checkin Override* off wins over step 1 unless
+2. **Employee Project Assignment** active on the date. Its projects share the hours by
+   Allocation %. An assignment with *Allow Checkin Override* off wins over step 1 unless
    the checkin is marked *Is Project Override*.
 3. Default Project on the Employee.
 4. Default Project on the Department.

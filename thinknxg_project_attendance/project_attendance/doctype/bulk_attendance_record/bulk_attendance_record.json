@@ -21,8 +21,10 @@
   "department",
   "project_section",
   "common_project",
-  "column_break_project",
   "project_change_allowed",
+  "column_break_project",
+  "common_shift",
+  "shift_change_allowed",
   "details_section",
   "details",
   "summary_section",
@@ -151,7 +153,7 @@
   {
    "fieldname": "project_section",
    "fieldtype": "Section Break",
-   "label": "Project"
+   "label": "Project and Shift"
   },
   {
    "fieldname": "common_project",
@@ -162,14 +164,27 @@
    "description": "Applied to every day. Enable Project Change Allowed to use different projects on individual days."
   },
   {
-   "fieldname": "column_break_project",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "project_change_allowed",
    "fieldtype": "Check",
    "label": "Project Change Allowed",
    "description": "If unchecked, all days inherit the Common Project and the row Project is read-only."
+  },
+  {
+   "fieldname": "column_break_project",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "common_shift",
+   "fieldtype": "Link",
+   "label": "Common Shift",
+   "options": "Shift Type",
+   "description": "Applied to every day. Defaults to the employee's Default Shift. Enable Shift Change Allowed to use different shifts on individual days."
+  },
+  {
+   "fieldname": "shift_change_allowed",
+   "fieldtype": "Check",
+   "label": "Shift Change Allowed",
+   "description": "If unchecked, all days inherit the Common Shift and the row Shift is read-only."
   },
   {
    "fieldname": "details_section",
@@ -297,7 +312,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-10-08 20:00:00.000000",
+ "modified": "2026-10-09 09:00:00.000000",
  "modified_by": "Administrator",
  "module": "Project Attendance",
  "name": "Bulk Attendance Record",

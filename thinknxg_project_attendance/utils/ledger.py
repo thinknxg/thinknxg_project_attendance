@@ -134,15 +134,27 @@ class ProjectResolver:
         self._defaults = {}
 
     def assignments(self, employee, on_date):
+        """Project rows (project, allocation %, primary, override flag) of the assignments active on a date."""
         key = (employee, on_date)
         if key not in self._assignments:
-            rows = frappe.get_all(
+            parents = frappe.get_all(
                 "Employee Project Assignment",
                 filters={"employee": employee, "disabled": 0, "from_date": ["<=", on_date]},
-                fields=["name", "project", "to_date", "allocation_percent", "is_primary", "allow_checkin_override"],
-                order_by="is_primary desc, from_date desc",
+                fields=["name", "to_date", "allow_checkin_override"],
+                order_by="from_date desc",
             )
-            self._assignments[key] = [r for r in rows if not r.to_date or getdate(r.to_date) >= on_date]
+            parents = {p.name: p for p in parents if not p.to_date or getdate(p.to_date) >= on_date}
+            rows = []
+            if parents:
+                for row in frappe.get_all(
+                    "Employee Project Allocation",
+                    filters={"parent": ["in", list(parents)], "parenttype": "Employee Project Assignment"},
+                    fields=["parent", "project", "allocation_percent", "is_primary"],
+                    order_by="is_primary desc, idx asc",
+                ):
+                    row.allow_checkin_override = parents[row.parent].allow_checkin_override
+                    rows.append(row)
+            self._assignments[key] = rows
         return self._assignments[key]
 
     def defaults(self, employee):

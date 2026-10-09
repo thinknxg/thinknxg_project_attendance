@@ -8,14 +8,15 @@
   "employee_name",
   "company",
   "column_break_1",
-  "project",
   "from_date",
   "to_date",
   "column_break_2",
-  "allocation_percent",
-  "is_primary",
   "allow_checkin_override",
   "disabled",
+  "projects_section",
+  "projects",
+  "total_allocation",
+  "project_summary",
   "remarks_section",
   "remarks"
  ],
@@ -51,16 +52,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "project",
-   "fieldtype": "Link",
-   "label": "Project",
-   "options": "Project",
-   "reqd": 1,
-   "in_standard_filter": 1,
-   "in_list_view": 1,
-   "search_index": 1
-  },
-  {
    "fieldname": "from_date",
    "fieldtype": "Date",
    "label": "From Date",
@@ -79,19 +70,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "allocation_percent",
-   "fieldtype": "Percent",
-   "label": "Allocation %",
-   "default": "100",
-   "in_list_view": 1,
-   "description": "Overlapping assignments of an employee share the hours by this percentage and may not exceed 100 in total."
-  },
-  {
-   "fieldname": "is_primary",
-   "fieldtype": "Check",
-   "label": "Is Primary"
-  },
-  {
    "fieldname": "allow_checkin_override",
    "fieldtype": "Check",
    "label": "Allow Checkin Override",
@@ -102,6 +80,34 @@
    "fieldname": "disabled",
    "fieldtype": "Check",
    "label": "Disabled"
+  },
+  {
+   "fieldname": "projects_section",
+   "fieldtype": "Section Break",
+   "label": "Projects"
+  },
+  {
+   "fieldname": "projects",
+   "fieldtype": "Table",
+   "label": "Project Allocation",
+   "options": "Employee Project Allocation",
+   "reqd": 1,
+   "description": "One row per project. The Allocation % of all rows must add up to 100. Hours without a project on the checkin are shared between these projects by percentage."
+  },
+  {
+   "fieldname": "total_allocation",
+   "fieldtype": "Percent",
+   "label": "Total Allocation %",
+   "read_only": 1
+  },
+  {
+   "fieldname": "project_summary",
+   "fieldtype": "Data",
+   "label": "Projects",
+   "read_only": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "length": 500
   },
   {
    "fieldname": "remarks_section",
@@ -115,7 +121,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-10-08 20:00:00.000000",
+ "modified": "2026-10-09 09:00:00.000000",
  "modified_by": "Administrator",
  "module": "Project Attendance",
  "name": "Employee Project Assignment",
@@ -176,5 +182,5 @@
  "naming_rule": "Expression",
  "title_field": "employee_name",
  "track_changes": 1,
- "search_fields": "employee,employee_name,project"
+ "search_fields": "employee,employee_name,project_summary"
 }

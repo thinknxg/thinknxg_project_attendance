@@ -53,7 +53,7 @@ frappe.ui.form.on("Bulk Attendance Record", {
         frm.events.toggle_project_column(frm);
 
         if (frm.doc.docstatus === 0) {
-            frm.add_custom_button(__("Generate Days"), () => frm.events.generate_days(frm)).addClass(
+            frm.add_custom_button(__("Generate Days"), () => frm.events.generate_days(frm, false)).addClass(
                 "btn-primary"
             );
             frm.add_custom_button(__("Fill Present"), () => frm.events.fill_present(frm), __("Fill"));
@@ -108,8 +108,18 @@ frappe.ui.form.on("Bulk Attendance Record", {
         if (month < 0 || year < 2000 || year > 2100) return;
         const pad = (n) => String(n).padStart(2, "0");
         const last = new Date(year, month + 1, 0).getDate();
-        frm.set_value("from_date", `${year}-${pad(month + 1)}-01`);
-        frm.set_value("to_date", `${year}-${pad(month + 1)}-${pad(last)}`);
+        return Promise.all([
+            frm.set_value("from_date", `${year}-${pad(month + 1)}-01`),
+            frm.set_value("to_date", `${year}-${pad(month + 1)}-${pad(last)}`),
+        ]).then(() => frm.events.auto_generate(frm));
+    },
+
+    // Days are generated automatically as soon as month, employee and project are known.
+    auto_generate(frm) {
+        if (frm.doc.docstatus !== 0 || frm._nxg_generating) return;
+        if (!frm.doc.employee || !frm.doc.from_date || !frm.doc.to_date) return;
+        if (!frm.doc.project_change_allowed && !frm.doc.common_project) return;
+        frm.events.generate_days(frm, true);
     },
 
     company(frm) {
@@ -129,21 +139,60 @@ frappe.ui.form.on("Bulk Attendance Record", {
             frm.clear_table("details");
             frm.refresh_field("details");
         }
+        if (!frm.doc.employee) return;
+
+        // propose the employee's default shift and main project, then fill the days
+        frappe
+            .xcall("thinknxg_project_attendance.api.get_employee_defaults", {
+                employee: frm.doc.employee,
+                on_date: frm.doc.from_date,
+            })
+            .then((defaults) => {
+                defaults = defaults || {};
+                frm.doc.common_shift = defaults.default_shift || null;
+                if (!frm.doc.common_project && defaults.project) frm.doc.common_project = defaults.project;
+                frm.refresh_field("common_shift");
+                frm.refresh_field("common_project");
+                frm.events.auto_generate(frm);
+            });
     },
 
     common_project(frm) {
-        if (!frm.doc.project_change_allowed) frm.events.apply_common_project(frm, true);
+        if (!(frm.doc.details || []).length) {
+            frm.events.auto_generate(frm);
+        } else if (!frm.doc.project_change_allowed) {
+            frm.events.apply_common_project(frm, true);
+        }
     },
 
     project_change_allowed(frm) {
         frm.events.toggle_project_column(frm);
         if (!frm.doc.project_change_allowed) frm.events.apply_common_project(frm, true);
+        if (!(frm.doc.details || []).length) frm.events.auto_generate(frm);
     },
 
+    common_shift(frm) {
+        if (!frm.doc.shift_change_allowed) frm.events.apply_common_shift(frm);
+    },
+
+    shift_change_allowed(frm) {
+        frm.events.toggle_project_column(frm);
+        if (!frm.doc.shift_change_allowed) frm.events.apply_common_shift(frm);
+    },
+
+    apply_common_shift(frm) {
+        (frm.doc.details || []).forEach((row) => {
+            row.shift = row.status === "Holiday" ? null : frm.doc.common_shift;
+        });
+        frm.refresh_field("details");
+    },
+
+    // locks the row Project / Shift columns when a change between days is not allowed
     toggle_project_column(frm) {
         const grid = frm.fields_dict.details && frm.fields_dict.details.grid;
         if (!grid) return;
         grid.update_docfield_property("project", "read_only", frm.doc.project_change_allowed ? 0 : 1);
+        grid.update_docfield_property("shift", "read_only", frm.doc.shift_change_allowed ? 0 : 1);
         frm.set_df_property("common_project", "reqd", frm.doc.project_change_allowed ? 0 : 1);
         frm.refresh_field("details");
     },
@@ -155,20 +204,37 @@ frappe.ui.form.on("Bulk Attendance Record", {
         frm.refresh_field("details");
     },
 
-    generate_days(frm) {
+    generate_days(frm, silent) {
         if (!frm.doc.employee) {
-            frappe.msgprint(__("Select an Employee first."));
+            if (!silent) frappe.msgprint(__("Select an Employee first."));
             return;
         }
         if (!frm.doc.project_change_allowed && !frm.doc.common_project) {
-            frappe.msgprint(__("Select the Common Project first."));
+            if (!silent) frappe.msgprint(__("Select the Common Project first."));
             return;
         }
-        frm.call({ doc: frm.doc, method: "generate_days", freeze: true }).then(() => {
-            frm.dirty();
-            frm.refresh_fields();
-            frm.events.toggle_project_column(frm);
-        });
+        if (frm._nxg_generating) return;
+        frm._nxg_generating = true;
+        // frm.call returns a jQuery promise; wrap it to get a standard one (finally)
+        return Promise.resolve(frm.call({ doc: frm.doc, method: "generate_days", freeze: !silent }))
+            .then(() => {
+                frm.dirty();
+                frm.refresh_fields();
+                frm.events.toggle_project_column(frm);
+                if (silent && (frm.doc.details || []).length) {
+                    frappe.show_alert({
+                        message: __("{0} days generated for {1} {2}.", [
+                            frm.doc.details.length,
+                            frm.doc.posting_month,
+                            frm.doc.posting_year,
+                        ]),
+                        indicator: "green",
+                    });
+                }
+            })
+            .finally(() => {
+                frm._nxg_generating = false;
+            });
     },
 
     fill_present(frm) {
@@ -251,6 +317,7 @@ frappe.ui.form.on("Bulk Attendance Detail", {
     details_add(frm, cdt, cdn) {
         const row = locals[cdt][cdn];
         row.project = frm.doc.common_project;
+        row.shift = frm.doc.common_shift;
         row.working_hours = thinknxg_project_attendance.normal_hours;
         frm.refresh_field("details");
     },

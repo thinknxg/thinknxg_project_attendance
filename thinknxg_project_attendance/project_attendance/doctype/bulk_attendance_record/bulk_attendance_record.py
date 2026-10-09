@@ -171,6 +171,8 @@ class BulkAttendanceRecord(Document):
             )
         if not self.grade:
             self.grade = emp.grade
+        if not self.common_shift and emp.default_shift:
+            self.common_shift = emp.default_shift
 
         self._employee = emp
 
@@ -317,10 +319,16 @@ class BulkAttendanceRecord(Document):
                     frappe.throw(
                         _("Row {0}: Working Hours plus Overtime Hours cannot exceed 24.").format(row.idx)
                     )
-                if not row.shift and emp.default_shift:
-                    row.shift = emp.default_shift
             else:
                 row.working_hours = 0
+
+            # shift control
+            if row.status == "Holiday":
+                row.shift = None
+            elif not cint(self.shift_change_allowed):
+                row.shift = self.common_shift
+            elif not row.shift and worked:
+                row.shift = self.common_shift or emp.default_shift
 
             # leave control
             if row.status == "Holiday":
@@ -643,6 +651,8 @@ class BulkAttendanceRecord(Document):
         self._settings = get_settings()
         self.validate_period()
         self.validate_employee()
+        if not cint(self.project_change_allowed) and not self.common_project:
+            frappe.throw(_("Set the Common Project, or enable Project Change Allowed."))
         fill_days(self, self._settings, self._employee)
         self.set_totals()
 
@@ -695,7 +705,7 @@ def fill_days(doc, settings, emp):
             row = {
                 "status": status,
                 "project": doc.common_project,
-                "shift": emp.default_shift if worked else None,
+                "shift": (doc.common_shift or emp.default_shift) if status != "Holiday" else None,
                 "overtime_hours": 0,
                 "working_hours": (normal_hours / 2 if status == "Half Day" else normal_hours) if worked else 0,
                 "leave_type": leave.leave_type if leave else None,
@@ -704,6 +714,10 @@ def fill_days(doc, settings, emp):
 
         if not cint(doc.project_change_allowed) and doc.common_project:
             row["project"] = doc.common_project
+        if row.get("status") == "Holiday":
+            row["shift"] = None
+        elif not cint(doc.shift_change_allowed):
+            row["shift"] = doc.common_shift or emp.default_shift
         row.update({"day": day, "weekday": day.strftime("%A"), "is_holiday": 1 if day in holidays else 0})
         rows.append(row)
 

@@ -50,6 +50,15 @@ frappe.listview_settings["Bulk Attendance Record"] = {
                     { fieldtype: "Section Break" },
                     { fieldname: "common_project", label: __("Common Project"), fieldtype: "Link", options: "Project" },
                     { fieldname: "project_change_allowed", label: __("Project Change Allowed"), fieldtype: "Check" },
+                    { fieldtype: "Column Break" },
+                    {
+                        fieldname: "common_shift",
+                        label: __("Common Shift"),
+                        fieldtype: "Link",
+                        options: "Shift Type",
+                        description: __("Leave empty to use each employee's Default Shift."),
+                    },
+                    { fieldname: "shift_change_allowed", label: __("Shift Change Allowed"), fieldtype: "Check" },
                 ],
                 primary_action_label: __("Create Drafts"),
                 primary_action(values) {
